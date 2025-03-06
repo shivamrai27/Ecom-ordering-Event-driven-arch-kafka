@@ -1,12 +1,14 @@
 import express from 'express';
 import orderRoutes from './api/orders.js';
-const router = express.Router();
+import { consumeOrderCreatedEvent } from './kafka/consumer.js';
 const app = express();
+const port = 3000;
 
 app.use(express.json());
-router.post('/', orderRoutes);
-app.use('/', router);
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+app.use('/orders', orderRoutes);
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+  consumeOrderCreatedEvent(); // Start the consumer
 });
 

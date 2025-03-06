@@ -1,4 +1,4 @@
-const {Kafka} = require('kafkajs');
+import { Kafka } from 'kafkajs';
 
 const kafka = new Kafka({
     clientId: 'ecom-order-producer',
@@ -6,20 +6,22 @@ const kafka = new Kafka({
 });
 
 const producer = kafka.producer();
+
 async function produceOrderCreatedEvent(order){
     try {
         await producer.connect();
         await producer.send({
             topic: 'order-created',
-            messages: [{values: JSON.stringify(order)}],
-        })
+            messages: [{ value: JSON.stringify(order) }],
+        });
         console.log('Order created event published:', order);
     } catch (error) {
         console.error('Error publishing order created event:', error);
         throw error;
     }
-    finally{
+    finally {
         await producer.disconnect();
     }
 }
-module.exports = {produceOrderCreatedEvent};
+
+export { produceOrderCreatedEvent };

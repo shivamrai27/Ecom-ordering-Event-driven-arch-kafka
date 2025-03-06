@@ -1,7 +1,6 @@
-
-
-async function processShipping(order){
-    console.log('Shipping srvice processing order', order);
-    
-}
-module.export = {processShipping};
+//src/services/shipping.js
+export async function shippingService(order) {
+    console.log('Shipping service processing order:', order);
+    // Simulate shipping initiation
+  }
+  

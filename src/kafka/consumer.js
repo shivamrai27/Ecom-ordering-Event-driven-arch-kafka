@@ -1,14 +1,15 @@
-const { Kafka } = require('kafkajs');
-const inventoryService = require('../services/inventory');
-const paymentService = require('../services/payment');
-const shippingService = require('../services/shipping');
+import { Kafka } from 'kafkajs';
+import {processInventory} from '../services/inventory.js';
+import {paymentService} from '../services/payment.js';
+import {shippingService} from '../services/shipping.js';
 
 const kafka = new Kafka({
     clientId: 'ecom-order-consumer',
     brokers: ['localhost:9092'],
-})
+});
 
 const consumer = kafka.consumer({ groupId: 'order-processing-group' });
+
 async function consumeOrderCreatedEvent(){
     try {
         await consumer.connect();
@@ -17,7 +18,7 @@ async function consumeOrderCreatedEvent(){
             eachMessage: async ({message}) =>{
                 const order = JSON.parse(message.value.toString());
                 console.log('Order received:', order);
-                await inventoryService.updateStock(order);
+                await processInventory.updateStock(order);
                 await paymentService.processPayment(order);
                 await shippingService.initiateShipping(order);
             }
@@ -26,4 +27,5 @@ async function consumeOrderCreatedEvent(){
         console.error('Error consuming order created events:', error);
     }
 }
-module.exports = {consumeOrderCreatedEvent};
+
+export { consumeOrderCreatedEvent };
