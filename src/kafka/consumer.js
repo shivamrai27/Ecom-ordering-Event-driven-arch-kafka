@@ -16,13 +16,17 @@ async function consumeOrderCreatedEvent(){
         await consumer.subscribe({topic: 'order-created', fromBeginning: true});
         await consumer.run({
             eachMessage: async ({message}) =>{
+                try {
                 const order = JSON.parse(message.value.toString());
                 console.log('Order received:', order);
                 await processInventory.updateStock(order);
                 await paymentService.processPayment(order);
                 await shippingService.initiateShipping(order);
-            }
-        })
+                } catch (error) {
+                    console.error('Error processing message:', error);
+                }                
+            },
+        });
     } catch (error) {
         console.error('Error consuming order created events:', error);
     }

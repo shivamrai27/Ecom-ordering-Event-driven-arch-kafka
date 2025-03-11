@@ -20,8 +20,12 @@ async function produceOrderCreatedEvent(order){
         throw error;
     }
     finally {
-        await producer.disconnect();
-    }
+        try {
+          await producer.disconnect();
+        } catch (disconnectError) {
+          console.error("Error disconnecting producer:", disconnectError);
+        }
+      }
 }
 
 export { produceOrderCreatedEvent };
